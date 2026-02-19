@@ -57,4 +57,15 @@ class Letter extends Model
     public function scopeRejected($query){
         return $query->where('status', 'ditolak');
     }
+
+    // Di dalam class Letter
+    public function getOriginalFileUrlAttribute()
+    {
+        return $this->file_path ? asset('storage/' . $this->file_path) : null;
+    }
+
+    public function getVerifiedFileUrlAttribute()
+    {
+        return $this->verified_file_path ? asset('storage/' . $this->verified_file_path) : null;
+    }
 }

@@ -26,19 +26,12 @@ class LetterPolicy
 
     public function approve(User $user, Letter $letter): Response
     {
-        // hanya staff/ketua dari divisi surat
-        if (!$user->isStaff()){
-            return Response::deny('Hanya staff yang dapat menyetujui surat ini.');
+        if (!$user->isStaff()) {
+            return Response::deny('Hanya staff yang dapat menyetujui surat.');
         }
 
-        $letterDivisionId = $letter->letterType->division_id;
-        if ($user->division_id !== $letterDivisionId){
-            return Response::deny('Anda tidak berwenang menyetujui surat ini.');
-        }
-
-        // surat harus dalam status 'menunggu'
-        if ($letter->status !== 'menunggu'){
-            return Response::deny('Surat ini sudah diproses.');
+        if ($letter->status !== 'verifikasi') {
+            return Response::deny('Surat harus dalam status "Verifikasi" untuk disetujui.');
         }
 
         return Response::allow();
@@ -59,5 +52,18 @@ class LetterPolicy
     public function update(User $user, Letter $letter): Response
     {
         return $this->delete($user, $letter);
+    }
+
+    public function verify(User $user, Letter $letter): Response
+    {
+        if (!$user->isStaff()) {
+            return Response::deny('Hanya staff yang dapat memverifikasi dokumen.');
+        }
+
+        if ($letter->status !== 'menunggu') {
+            return Response::deny('Surat sudah diproses.');
+        }
+
+        return Response::allow();
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Letter;
 use App\Models\LetterType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 use function Symfony\Component\Clock\now;
 use Illuminate\Validation\ValidationException;
 
@@ -63,30 +64,37 @@ class LetterController extends Controller
 
     // Staff: Kelola surat divisi
 
-    public function index(){
-        // hanya surat dari divisi user yang sedang login
-        $letters = Letter::forCurrentUserDivision()
-        ->with('student', 'letterType')
-        ->latest()
-        ->paginate(10);
+    public function index()
+{
+        $pendingLetters = Letter::forCurrentUserDivision()
+            ->whereIn('status', ['menunggu', 'verifikasi'])
+            ->with('student', 'letterType')
+            ->latest()
+            ->paginate(10);
 
-        return view('admin.letters.index', compact('letters'));
+        $pendingCount = $pendingLetters->total();
+
+        return view('admin.letters.index', compact('pendingLetters', 'pendingCount'));
+    }
+
+    public function show(Letter $letter)
+    {
+        Gate::authorize('view', $letter);
+        return view('letters.show', compact('letter'));
     }
 
     public function approve(Letter $letter){
-        $this->authorize('approve', $letter);
-
+        Gate::authorize('approve', $letter);
         $letter->update([
             'status' => 'disetujui',
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
-
-        return back()->with('success', 'Surat berhasil disetujui!');
+        return back()->with('success', 'Surat telah disetujui.');
     }
 
     public function reject(Request $request, Letter $letter){
-        $this->authorize('approve', $letter); // reject = bagian dari approval
+        Gate::authorize('approve', $letter); // reject = bagian dari approval
 
         $request->validate([
             'notes' => 'required|string|max:500',
@@ -105,7 +113,7 @@ class LetterController extends Controller
     // Ketua divisi: Hapus surat
 
     public function destroy(Letter $letter){
-        $this->authorize('delete', $letter);
+        Gate::authorize('delete', $letter);
 
         // Hapus file lampiran jika ada
         if ($letter->file_path){
@@ -115,5 +123,33 @@ class LetterController extends Controller
         $letter->delete();
 
         return back()->with('success', 'Surat berhasil dihapus!');
+    }
+
+    public function verify(Letter $letter)
+    {
+        Gate::authorize('verify', $letter);
+        $letter->update(['status' => 'verifikasi']);
+        return back()->with('success', 'Dokumen sedang diverifikasi.');
+    }
+
+    public function uploadVerified(Request $request, Letter $letter)
+    {
+        Gate::authorize('verify', $letter); // pastikan staff berwenang
+
+        $request->validate([
+            'verified_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240', // 10MB
+        ]);
+
+        // Hapus file lama jika ada
+        if ($letter->verified_file_path) {
+            Storage::disk('public')->delete($letter->verified_file_path);
+        }
+
+        // Simpan file baru
+        $filePath = $request->file('verified_file')->store('verified', 'public');
+
+        $letter->update(['verified_file_path' => $filePath]);
+
+        return back()->with('success', 'Dokumen hasil verifikasi berhasil diunggah.');
     }
 }
