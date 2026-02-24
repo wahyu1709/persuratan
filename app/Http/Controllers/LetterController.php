@@ -83,6 +83,19 @@ class LetterController extends Controller
         return view('letters.show', compact('letter'));
     }
 
+    public function history()
+    {
+        $historyLetters = Letter::forCurrentUserDivision()
+            ->whereIn('status', ['disetujui', 'ditolak'])
+            ->with('student', 'letterType')
+            ->latest()
+            ->paginate(10);
+
+        $historyCount = $historyLetters->total();
+
+        return view('admin.letters.history', compact('historyLetters', 'historyCount'));
+    }
+
     public function approve(Letter $letter){
         Gate::authorize('approve', $letter);
         $letter->update([
@@ -94,7 +107,7 @@ class LetterController extends Controller
     }
 
     public function reject(Request $request, Letter $letter){
-        Gate::authorize('approve', $letter); // reject = bagian dari approval
+        Gate::authorize('reject', $letter); // reject = bagian dari approval
 
         $request->validate([
             'notes' => 'required|string|max:500',

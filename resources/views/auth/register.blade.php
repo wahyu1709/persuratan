@@ -143,6 +143,28 @@
                                     <div class="invalid-feedback">NIP wajib diisi untuk staff.</div>
                                 </div>
 
+                                <!-- Jenjang Pendidikan -->
+                                <div id="academicFields" class="mb-3" style="{{ old('role') != 'staff' ? '' : 'display:none;' }}">
+                                    <label for="study_level" class="form-label">Jenjang Pendidikan <span class="text-danger">*</span></label>
+                                    <select name="study_level" id="study_level" class="form-select" required>
+                                        <option value="">-- Pilih Jenjang --</option>
+                                        <option value="s1" {{ old('study_level') == 's1' ? 'selected' : '' }}>S1</option>
+                                        <option value="s2" {{ old('study_level') == 's2' ? 'selected' : '' }}>S2</option>
+                                        <option value="s3" {{ old('study_level') == 's3' ? 'selected' : '' }}>S3</option>
+                                    </select>
+                                </div>
+
+                                <!-- Semester -->
+                                <div id="semesterField" class="mb-3" style="{{ old('role') != 'staff' ? '' : 'display:none;' }}">
+                                    <label for="semester" class="form-label">Semester <span class="text-danger">*</span></label>
+                                    <select name="semester" id="semester" class="form-select" required>
+                                        <option value="">-- Pilih Semester --</option>
+                                        @for($i = 1; $i <= 14; $i++)
+                                            <option value="{{ $i }}" {{ old('semester') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+
                                 <!-- Password -->
                                 <div class="mb-3">
                                     <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
@@ -231,47 +253,41 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const roleMahasiswa = document.getElementById('roleMahasiswa');
-        const roleStaff = document.getElementById('roleStaff');
-        const nimField = document.getElementById('nimField');
-        const nipField = document.getElementById('nipField');
+document.addEventListener('DOMContentLoaded', function () {
+    const roleMahasiswa = document.getElementById('roleMahasiswa');
+    const roleStaff = document.getElementById('roleStaff');
+    const nimField = document.getElementById('nimField');
+    const nipField = document.getElementById('nipField');
+    const academicFields = document.getElementById('academicFields');
+    const semesterField = document.getElementById('semesterField');
 
-        function toggleFields() {
-            if (roleMahasiswa.checked) {
-                nimField.style.display = 'block';
-                nipField.style.display = 'none';
-                document.getElementById('nim').setAttribute('required', 'required');
-                document.getElementById('nip').removeAttribute('required');
-            } else if (roleStaff.checked) {
-                nimField.style.display = 'none';
-                nipField.style.display = 'block';
-                document.getElementById('nip').setAttribute('required', 'required');
-                document.getElementById('nim').removeAttribute('required');
-            }
+    function toggleFields() {
+        if (roleMahasiswa.checked) {
+            nimField.style.display = 'block';
+            nipField.style.display = 'none';
+            academicFields.style.display = 'block';
+            semesterField.style.display = 'block';
+
+            // Pastikan NIP kosong (agar tidak ikut dikirim)
+            document.getElementById('nip').value = '';
+        } else if (roleStaff.checked) {
+            nimField.style.display = 'none';
+            nipField.style.display = 'block';
+            academicFields.style.display = 'none';
+            semesterField.style.display = 'none';
+
+            // Pastikan NIM & akademik kosong
+            document.getElementById('nim').value = '';
+            document.getElementById('study_level').value = '';
+            document.getElementById('semester').value = '';
         }
+    }
 
-        roleMahasiswa.addEventListener('change', toggleFields);
-        roleStaff.addEventListener('change', toggleFields);
+    roleMahasiswa.addEventListener('change', toggleFields);
+    roleStaff.addEventListener('change', toggleFields);
 
-        // Inisialisasi awal
-        toggleFields();
-
-        // Validasi Bootstrap
-        (function () {
-            'use strict';
-            var forms = document.querySelectorAll('.needs-validation');
-            Array.prototype.slice.call(forms).forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        })();
-    });
+    // Inisialisasi awal
+    toggleFields();
+});
 </script>
 @endpush
-@endsection

@@ -26,6 +26,8 @@ class RegisterController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:mahasiswa,staff',
             'nim' => 'required_if:role,mahasiswa|nullable|unique:users,nim',
+            'study_level' => 'required_if:role,mahasiswa|nullable|in:s1,s2,s3',
+            'semester' => 'required_if:role,mahasiswa|nullable|integer|min:1|max:14',
             'nip' => 'required_if:role,staff|nullable',
         ], [
             'nim.required_if' => 'NIM wajib diisi untuk mahasiswa.',
@@ -55,6 +57,8 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'nim' => $request->role === 'mahasiswa' ? $request->nim : null,
+            'study_level' => $request->role === 'mahasiswa' ? $request->study_level : null,
+            'semester' => $request->role === 'mahasiswa' ? $request->semester : null,
             'nip' => $request->role === 'staff' ? $request->nip : null,
             'role' => $request->role,
             'division_id' => $divisionId,

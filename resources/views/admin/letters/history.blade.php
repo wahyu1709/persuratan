@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Surat')
-@section('header', 'Surat Menunggu Verifikasi')
+@section('title', 'Riwayat Surat')
+@section('header', 'Riwayat Surat')
 
 @section('content')
 <div class="row">
@@ -9,17 +9,17 @@
         <div class="card">
             <div class="card-header border-bottom-0 pb-0">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h4>Daftar Surat Menunggu</h4>
+                    <h4>Daftar Riwayat Surat</h4>
                     <small class="text-muted">
-                        {{ $pendingLetters->total() }} surat menunggu di divisi {{ auth()->user()->division->name ?? '-' }}
+                        {{ $historyLetters->total() }} surat dalam riwayat di divisi {{ auth()->user()->division->name ?? '-' }}
                     </small>
                 </div>
             </div>
             <div class="card-body p-0">
-                @if($pendingLetters->isEmpty())
+                @if($historyLetters->isEmpty())
                     <div class="text-center py-5">
                         <i class="ti ti-inbox fs-1 text-muted mb-3"></i>
-                        <p class="text-muted mb-0">Tidak ada surat menunggu saat ini.</p>
+                        <p class="text-muted mb-0">Tidak ada surat dalam riwayat saat ini.</p>
                     </div>
                 @else
                     <div class="table-responsive">
@@ -35,7 +35,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($pendingLetters as $letter)
+                                @foreach($historyLetters as $letter)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>
@@ -123,7 +123,7 @@
 
                     <!-- Pagination -->
                     <div class="card-footer bg-white border-top">
-                        {{ $pendingLetters->links() }}
+                        {{ $historyLetters->links() }}
                     </div>
                 @endif
             </div>

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('nim')->nullable()->unique();
             $table->string('nip')->nullable();
             $table->enum('role', ['mahasiswa', 'staff', 'ketua_divisi']);
+            $table->string('study_level')->nullable(); // Jenjang: S1, Profesi, D3, dst.
+            $table->tinyInteger('semester')->nullable(); // Semester: 1–14
             $table->foreignId('division_id')->nullable()->constrained('divisions')->onDelete('set null');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

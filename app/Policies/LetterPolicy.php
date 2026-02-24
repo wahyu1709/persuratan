@@ -60,8 +60,22 @@ class LetterPolicy
             return Response::deny('Hanya staff yang dapat memverifikasi dokumen.');
         }
 
-        if ($letter->status !== 'menunggu') {
+        if (!in_array($letter->status, ['menunggu', 'verifikasi'])) {
             return Response::deny('Surat sudah diproses.');
+        }
+
+        return Response::allow();
+    }
+
+    public function reject(User $user, Letter $letter): Response
+    {
+        if (!$user->isStaff()) {
+            return Response::deny('Hanya staff yang dapat menolak surat.');
+        }
+
+        // Bisa ditolak dari status menunggu maupun verifikasi
+        if (!in_array($letter->status, ['menunggu', 'verifikasi'])) {
+            return Response::deny('Surat tidak dapat ditolak pada status ini.');
         }
 
         return Response::allow();

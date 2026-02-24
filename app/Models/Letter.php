@@ -15,6 +15,7 @@ class Letter extends Model
         'status',
         'data',
         'file_path',
+        'verified_file_path',
         'notes',
         'approved_by',
         'approved_at',

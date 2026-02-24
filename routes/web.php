@@ -37,6 +37,7 @@ Route::middleware([
     EnsureUserOwnsDivision::class,
 ])->group(function () {
     Route::get('/admin/letters', [LetterController::class, 'index'])->name('admin.letters.index');
+    Route::get('/admin/letters/history', [LetterController::class, 'history'])->name('admin.letters.history');
     Route::post('/admin/letters/{letter}/approve', [LetterController::class, 'approve'])->name('admin.letters.approve');
     Route::post('/admin/letters/{letter}/reject', [LetterController::class, 'reject'])->name('admin.letters.reject');
     Route::post('/admin/letters/{letter}/verify', [LetterController::class, 'verify'])->name('admin.letters.verify');
