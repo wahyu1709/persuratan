@@ -57,6 +57,15 @@
                                             <a href="{{ route('letters.show', $letter) }}" class="btn btn-outline-secondary btn-sm">
                                                 <i class="ti ti-eye me-1"></i> Lihat
                                             </a>
+
+                                            @if($letter->status === 'menunggu' && $letter->user_id === auth()->id())
+                                                <form method="POST" action="{{ route('letters.cancel', $letter) }}" class="d-inline" onsubmit="return confirm('Yakin batalkan surat ini?')">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
+                                                        <i class="ti ti-x"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

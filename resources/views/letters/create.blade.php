@@ -66,6 +66,9 @@
                         <small class="form-text text-muted mt-1">
                             Format: PDF, JPG, PNG | Max 5 MB
                         </small>
+
+                        <!-- Preview Area -->
+                        <div id="preview-container" class="mt-3"></div>
                     </div>
 
                     <!-- Action Button -->
@@ -142,3 +145,49 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('attachment');
+    const previewContainer = document.getElementById('preview-container');
+
+    input.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        previewContainer.innerHTML = '';
+
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        if (file.type.startsWith('image/')) {
+            reader.onload = function (event) {
+                const img = document.createElement('img');
+                img.src = event.target.result;
+                img.className = 'img-thumbnail mt-2 rounded border';
+                img.style.maxHeight = '200px';
+                img.style.width = '100%';
+                img.style.objectFit = 'contain';
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+
+        } else if (file.type === 'application/pdf') {
+            const div = document.createElement('div');
+            div.className = 'alert alert-info d-flex align-items-center p-3 mt-2';
+            div.innerHTML = `
+                <i class="ti ti-file-text text-primary fs-4 me-3"></i>
+                <div>
+                    <strong>${file.name}</strong><br>
+                    <small class="text-muted">File PDF terpilih</small>
+                </div>
+            `;
+            previewContainer.appendChild(div);
+
+        } else {
+            previewContainer.innerHTML = `<div class="alert alert-warning mt-2"><i class="ti ti-alert-circle me-2"></i> Format tidak didukung</div>`;
+        }
+    });
+});
+</script>
+@endpush

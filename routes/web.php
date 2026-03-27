@@ -47,6 +47,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/letters', [LetterController::class, 'store'])->name('letters.store');
     Route::get('/letters/my', [LetterController::class, 'myLetters'])->name('letters.my');
     Route::get('/letters/{letter}', [LetterController::class, 'show'])->name('letters.show');
+
+    // Batal pengajuan
+    Route::post('/letters/{letter}/cancel', [LetterController::class, 'cancel'])->name('letters.cancel');
 });
 
 // Staff & Ketua Divisi

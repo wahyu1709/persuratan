@@ -176,4 +176,16 @@ class LetterController extends Controller
 
         return back()->with('success', 'Dokumen hasil verifikasi berhasil diunggah.');
     }
+
+    public function cancel(Letter $letter)
+    {
+        // Hanya pemilik surat & hanya jika status = menunggu
+        if ($letter->user_id !== auth()->id() || $letter->status !== 'menunggu') {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $letter->update(['status' => 'dibatalkan']);
+
+        return back()->with('success', 'Surat berhasil dibatalkan.');
+    }
 }
