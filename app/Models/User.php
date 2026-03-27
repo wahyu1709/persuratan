@@ -24,8 +24,6 @@ class User extends Authenticatable
         'nip',
         'role',
         'division_id',
-        'study_level',
-        'semester',
     ];
 
     /**

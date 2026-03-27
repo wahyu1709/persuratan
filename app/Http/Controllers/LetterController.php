@@ -14,10 +14,21 @@ class LetterController extends Controller
 {
     // mahasiswa ajukan & lihat surat
 
-    public function create()
+    // public function create()
+    // {
+    //     $letterTypes = LetterType::active()->get();
+    //     return view('letters.create', compact('letterTypes'));
+    // }
+
+    public function chooseType()
     {
         $letterTypes = LetterType::active()->get();
-        return view('letters.create', compact('letterTypes'));
+        return view('letters.choose-type', compact('letterTypes'));
+    }
+
+    public function showForm(LetterType $letterType)
+    {
+        return view('letters.create', compact('letterType'));
     }
 
     public function store(Request $request){

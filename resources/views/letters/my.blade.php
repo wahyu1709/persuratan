@@ -10,7 +10,7 @@
             <div class="card-header border-bottom-0 pb-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Daftar Surat</h4>
-                    <a href="{{ route('letters.create') }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('letters.choose-type') }}" class="btn btn-primary btn-sm">
                         <i class="ti ti-plus me-1"></i> Ajukan Surat Baru
                     </a>
                 </div>

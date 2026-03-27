@@ -11,15 +11,15 @@ class LetterType extends Model
 
     protected $fillable = [
         'name',
-        'description',
+        'code',
         'required_fields',
-        'is_active',
         'division_id',
+        'active',
     ];
 
     protected $casts = [
         'required_fields' => 'array',
-        'is_active' => 'boolean',
+        'active' => 'boolean',
     ];
 
     public function division(){
@@ -31,6 +31,6 @@ class LetterType extends Model
     }
 
     public function scopeActive($query){
-        return $query->where('is_active', true);
+        return $query->where('active', true);
     }
 }

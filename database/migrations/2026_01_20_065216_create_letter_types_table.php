@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('letter_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->json('required_fields')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->string('name'); // contoh: "Surat Keterangan Aktif Mahasiswa"
+            $table->string('code')->unique(); // contoh: "aktif_kuliah"
+            $table->json('required_fields')->nullable(); // array: ["nim", "semester", "tujuan_surat"]
             $table->foreignId('division_id')->constrained()->onDelete('cascade');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }
