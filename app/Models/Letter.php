@@ -69,4 +69,9 @@ class Letter extends Model
     {
         return $this->verified_file_path ? asset('storage/' . $this->verified_file_path) : null;
     }
+
+    public function logs()
+    {
+        return $this->hasMany(LetterLog::class)->latest();
+    }
 }

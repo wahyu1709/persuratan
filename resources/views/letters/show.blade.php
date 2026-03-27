@@ -3,6 +3,38 @@
 @section('title', 'Detail Surat')
 @section('header', 'Detail Surat')
 
+@push('styles')
+<style>
+.timeline { position: relative; padding-left: 20px; }
+.timeline:before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background-color: #e5e7eb;
+}
+.timeline-item {
+    position: relative;
+    padding-bottom: 1rem;
+}
+.timeline-dot {
+    position: absolute;
+    left: -28px;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: white;
+}
+</style>
+@endpush
+
 @section('content')
 <div class="row">
     <div class="col-xl-8 col-lg-7">
@@ -111,6 +143,27 @@
                         <p class="text-danger">{{ $letter->notes }}</p>
                     </div>
                 @endif
+
+                <div class="mt-5">
+                    <h6>Riwayat Aktivitas</h6>
+                    <div class="timeline">
+                        @foreach($letter->logs as $log)
+                            <div class="timeline-item mb-3">
+                                <div class="timeline-dot bg-primary"></div>
+                                <div class="timeline-content">
+                                    <small class="text-muted">{{ $log->created_at->format('d M Y H:i') }}</small>
+                                    <p class="mb-1">
+                                        <strong>{{ $log->user->name }}</strong> 
+                                        {{ $log->action_label }} surat
+                                    </p>
+                                    @if($log->notes)
+                                        <small class="text-muted fst-italic">→ {{ $log->notes }}</small>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
     </div>

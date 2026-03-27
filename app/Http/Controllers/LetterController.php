@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Letter;
+use App\Models\LetterLog;
 use App\Models\LetterType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
-use function Symfony\Component\Clock\now;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+
+use function Symfony\Component\Clock\now;
 
 class LetterController extends Controller
 {
@@ -57,12 +59,18 @@ class LetterController extends Controller
             $filePath = $request->file('attachment')->store('attachments', 'public');
         }
 
-        Letter::create([
+        $letter = Letter::create([
             'user_id' => auth()->id(),
             'letter_type_id' => $letterType->id,
             'data' => $dynamicData,
             'file_path' => $filePath,
             'status' => 'menunggu',
+        ]);
+
+        LetterLog::create([
+            'letter_id' => $letter->id,
+            'user_id' => auth()->id(),
+            'action' => 'submitted',
         ]);
 
         return redirect()->route('letters.my')->with('success', 'Surat berhasil diajukan!');
@@ -76,7 +84,7 @@ class LetterController extends Controller
     // Staff: Kelola surat divisi
 
     public function index()
-{
+    {
         $pendingLetters = Letter::forCurrentUserDivision()
             ->whereIn('status', ['menunggu', 'verifikasi'])
             ->with('student', 'letterType')
@@ -109,11 +117,19 @@ class LetterController extends Controller
 
     public function approve(Letter $letter){
         Gate::authorize('approve', $letter);
+
         $letter->update([
             'status' => 'disetujui',
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
+
+        LetterLog::create([
+            'letter_id' => $letter->id,
+            'user_id' => auth()->id(),
+            'action' => 'approved',
+        ]);
+
         return back()->with('success', 'Surat telah disetujui.');
     }
 
@@ -128,6 +144,13 @@ class LetterController extends Controller
             'status' => 'ditolak',
             'approved_by' => auth()->id(),
             'approved_at' => now(),
+            'notes' => $request->notes,
+        ]);
+
+        LetterLog::create([
+            'letter_id' => $letter->id,
+            'user_id' => auth()->id(),
+            'action' => 'rejected',
             'notes' => $request->notes,
         ]);
 
@@ -153,6 +176,13 @@ class LetterController extends Controller
     {
         Gate::authorize('verify', $letter);
         $letter->update(['status' => 'verifikasi']);
+
+        LetterLog::create([
+            'letter_id' => $letter->id,
+            'user_id' => auth()->id(),
+            'action' => 'verified',
+        ]);
+
         return back()->with('success', 'Dokumen sedang diverifikasi.');
     }
 
@@ -185,6 +215,12 @@ class LetterController extends Controller
         }
 
         $letter->update(['status' => 'dibatalkan']);
+
+        LetterLog::create([
+            'letter_id' => $letter->id,
+            'user_id' => auth()->id(),
+            'action' => 'cancelled',
+        ]);
 
         return back()->with('success', 'Surat berhasil dibatalkan.');
     }
