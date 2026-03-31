@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LetterController;
+use App\Http\Controllers\LetterTypeController;
 use App\Http\Middleware\EnsureUserIsDivisionHead;
 use App\Http\Middleware\EnsureUserIsStaff;
 use App\Http\Middleware\EnsureUserOwnsDivision;
@@ -65,6 +66,12 @@ Route::middleware([
     Route::post('/admin/letters/{letter}/approve', [LetterController::class, 'approve'])->name('admin.letters.approve');
     Route::post('/admin/letters/{letter}/reject', [LetterController::class, 'reject'])->name('admin.letters.reject');
     Route::post('/admin/letters/{letter}/upload-verified', [LetterController::class, 'uploadVerified'])->name('admin.letters.upload-verified');
+    Route::get('/admin/letter-types', [LetterTypeController::class, 'index'])->name('admin.letter-types.index');
+    Route::get('/admin/letter-types/create', [LetterTypeController::class, 'create'])->name('admin.letter-types.create');
+    Route::post('/admin/letter-types', [LetterTypeController::class, 'store'])->name('admin.letter-types.store');
+    Route::get('/admin/letter-types/{letterType}/edit', [LetterTypeController::class, 'edit'])->name('admin.letter-types.edit');
+    Route::put('/admin/letter-types/{letterType}', [LetterTypeController::class, 'update'])->name('admin.letter-types.update');
+    Route::delete('/admin/letter-types/{letterType}', [LetterTypeController::class, 'destroy'])->name('admin.letter-types.destroy');
 });
 
 // Ketua Divisi: hapus surat
