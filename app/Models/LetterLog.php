@@ -47,4 +47,28 @@ class LetterLog extends Model
             default => ucfirst($this->action),
         };
     }
+
+    public function getActionColorClassAttribute()
+    {
+        return match($this->action) {
+            'submitted' => 'bg-primary',
+            'verified' => 'bg-warning',
+            'approved' => 'bg-success',
+            'rejected' => 'bg-danger',
+            'cancelled' => 'bg-secondary',
+            default => 'bg-gray-500',
+        };
+    }
+
+    public function getActionDotColorAttribute()
+    {
+        return match($this->action) {
+            'submitted' => 'bg-blue-500',
+            'verified' => 'bg-yellow-500',
+            'approved' => 'bg-green-500',
+            'rejected' => 'bg-red-500',
+            'cancelled' => 'bg-gray-500',
+            default => 'bg-gray-400',
+        };
+    }
 }

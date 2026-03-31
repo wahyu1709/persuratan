@@ -148,17 +148,23 @@
                     <h6>Riwayat Aktivitas</h6>
                     <div class="timeline">
                         @foreach($letter->logs as $log)
-                            <div class="timeline-item mb-3">
-                                <div class="timeline-dot bg-primary"></div>
-                                <div class="timeline-content">
+                            <div class="timeline-item mb-4">
+                                <!-- Dot warna sesuai aksi -->
+                                <div class="timeline-dot {{ $log->action_dot_color }} rounded-full w-4 h-4 mt-1 flex-shrink-0"></div>
+
+                                <div class="timeline-content ps-3">
                                     <small class="text-muted">{{ $log->created_at->format('d M Y H:i') }}</small>
                                     <p class="mb-1">
-                                        <strong>{{ $log->user->name }}</strong> 
-                                        {{ $log->action_label }} surat
+                                        <span class="badge {{ $log->action_color_class }} text-white text-sm me-2">
+                                            {{ $log->action_label }}
+                                        </span>
+                                        oleh <strong>{{ $log->user->name }}</strong>
                                     </p>
-                                    @if($log->notes)
-                                        <small class="text-muted fst-italic">→ {{ $log->notes }}</small>
-                                    @endif
+                                    {{-- @if($log->notes)
+                                        <small class="text-muted fst-italic d-block mt-1">
+                                            → {{ $log->notes }}
+                                        </small>
+                                    @endif --}}
                                 </div>
                             </div>
                         @endforeach
@@ -259,4 +265,33 @@
         @endif
     </div>
 </div>
+@endsection
+
+@section('styles')
+<style>
+.timeline {
+    position: relative;
+    padding-left: 24px;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 0;
+    height: 100%;
+ width: 2px;
+    background-color: #e5e7eb;
+}
+.timeline-item {
+    position: relative;
+}
+.timeline-dot {
+    position: absolute;
+    left: -28px;
+    top: 4px;
+}
+.timeline-content {
+    margin-bottom: 1rem;
+}
+</style>
 @endsection
